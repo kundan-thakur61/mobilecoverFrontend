@@ -29,14 +29,14 @@ const MATERIAL_OPTIONS = [
     id: 'polycarbonate',
     label: 'Glossy Metal',
     subtitle: 'metal finish Smooth shiny look Strong & durable',
-    price: 199,
+    price: 1,
     originalPrice: 400,
   },
   {
     id: 'tempered-glass',
     label: 'Glossy Metal + Gel',
     subtitle: 'Transparent layer Extra shine Design  premium',
-    price: 249,
+    price: 1,
     originalPrice: 600,
   },
 ];
