@@ -509,11 +509,11 @@ export default function Checkout() {
                   <span className="flex-1 text-sm sm:text-base">Pay Online (Razorpay)</span>
                   <span className="text-xs text-gray-500 hidden sm:inline">Cards, UPI, Wallets</span>
                 </label>
-                <label   className="flex items-center gap-2 cursor-pointer p-2 sm:p-3 border rounded-lg hover:bg-gray-50 transition">
+                {/* <label   className="flex items-center gap-2 cursor-pointer p-2 sm:p-3 border rounded-lg hover:bg-gray-50 transition">
                   <input type="radio" name="pm"  checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} className="flex-shrink-0" />
                   <span className="flex-1 text-sm sm:text-base">Cash on Delivery</span>
                   <span className="text-xs text-gray-500 hidden sm:inline">Pay when delivered</span>
-                </label>
+                </label> */}
               </div>
               
               {paymentMethod === 'cod' && (
