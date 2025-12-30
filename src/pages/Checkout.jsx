@@ -16,11 +16,13 @@ const UPI_APPS = [
 export default function Checkout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
 
   const cartItems = useSelector(selectCartItems);
   const total = useSelector(selectCartTotal);
   const user = useSelector((state) => state.auth.user);
 
+  
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('razorpay');
   const [upiId, setUpiId] = useState('');
