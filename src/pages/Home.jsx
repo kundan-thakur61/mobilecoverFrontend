@@ -185,6 +185,8 @@ const Home = () => {
       </div>  */}
 
 
+
+
       {/* Card 2 */}
       {/* <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 text-center">
         <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">

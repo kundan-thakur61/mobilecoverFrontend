@@ -86,21 +86,61 @@ const Products = () => {
     value !== '' && value !== null && value !== undefined && value !== false
   ).length;
 
+  // Dynamic SEO based on category
+  const getCategorySEO = () => {
+    const category = filters.category;
+    const brand = filters.brand;
+
+    if (category === 'Customizable' || brand === 'Custom') {
+      return {
+        title: "Custom Mobile Covers Online India | Design Your Own Phone Case | CoverGhar.in",
+        description: "Create custom mobile covers online in India. Design personalized phone cases with photos, text, and patterns. Premium quality custom covers for all models.",
+        keywords: "custom mobile cover, personalized mobile covers, design your own phone case, custom phone covers online India"
+      };
+    } else if (brand === 'Apple' || category === 'iPhone') {
+      return {
+        title: "iPhone Mobile Covers Online India | Custom iPhone Cases | CoverGhar.in",
+        description: "Buy iPhone mobile covers online in India. Custom iPhone cases for iPhone 15, 14, 13, SE. Premium protection with personalized designs.",
+        keywords: "iPhone mobile cover, iPhone cases online India, custom iPhone covers, iPhone 15 cover"
+      };
+    } else if (brand === 'Samsung') {
+      return {
+        title: "Samsung Mobile Covers Online India | Galaxy Phone Cases | CoverGhar.in",
+        description: "Premium Samsung mobile covers online in India. Custom Galaxy S, A, Note series cases. Designer covers for Samsung smartphones.",
+        keywords: "Samsung mobile cover, Galaxy phone cases, Samsung covers online India, custom Samsung cases"
+      };
+    } else if (category === 'Designer' || category === 'Anime') {
+      return {
+        title: "Designer Mobile Covers Online India | Anime & Pop Culture Cases | CoverGhar.in",
+        description: "Buy designer mobile covers online in India. Anime-inspired cases, pop culture designs, artistic patterns. Premium quality designer phone covers.",
+        keywords: "designer mobile covers, anime mobile covers, pop culture phone cases, artistic mobile covers"
+      };
+    } else {
+      return {
+        title: "Mobile Covers Online India | Custom Phone Cases | CoverGhar.in",
+        description: "Buy mobile covers online in India. Custom phone cases, designer covers for iPhone, Samsung & more. Premium quality, fast shipping.",
+        keywords: "mobile cover online India, phone cases online, custom mobile covers, designer phone covers"
+      };
+    }
+  };
+
+  const categorySEO = getCategorySEO();
+
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": "Mobile Covers Collection",
-    "description": "Browse our collection of custom mobile covers and phone cases"
+    "name": categorySEO.title,
+    "description": categorySEO.description
   };
 
   return (
     <>
-      <SEO 
-        title="Mobile Covers & Phone Cases | Shop Custom Designs" 
-        description="Browse our collection of custom mobile covers and phone cases. Premium quality, unique designs for all phone models." 
-        keywords="mobile covers, phone cases, custom covers, premium phone cases" 
-        url="/products" 
-        schema={productSchema} 
+      <SEO
+        title={categorySEO.title}
+        description={categorySEO.description}
+        keywords={categorySEO.keywords}
+        url={`/products${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}
+        schema={productSchema}
       />
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -257,6 +297,58 @@ const Products = () => {
             Showing {products.length} of {pagination.totalProducts} products
           </p>
         </div>
+
+        {/* Category SEO Content */}
+        {filters.category && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <div className="prose max-w-none">
+              {filters.category === 'Customizable' && (
+                <>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Custom Mobile Covers - Design Your Own Phone Case</h2>
+                  <p className="text-gray-700 mb-4">
+                    Create personalized mobile covers with your favorite photos, text, and designs. Our custom phone cases are made with premium materials and advanced UV printing technology for vibrant, long-lasting prints. Perfect for gifts or personal use, design your unique mobile cover in minutes and get it delivered across India.
+                  </p>
+                  <p className="text-gray-700">
+                    Choose from various case types including slim cases, rugged protection, and transparent covers. All custom covers come with precise cutouts for buttons and ports, ensuring full functionality while showcasing your design. Upload high-resolution images for best results and preview your design before ordering.
+                  </p>
+                </>
+              )}
+              {filters.category === 'Designer' && (
+                <>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Designer Mobile Covers - Premium Artistic Phone Cases</h2>
+                  <p className="text-gray-700 mb-4">
+                    Explore our curated collection of designer mobile covers featuring exclusive artwork, trending patterns, and artistic designs. From minimalist aesthetics to bold statements, our designer phone cases combine style with protection. Each design is carefully crafted to complement your personality and lifestyle.
+                  </p>
+                  <p className="text-gray-700">
+                    Our designer collection includes anime-inspired covers, abstract art, nature themes, and pop culture references. All covers feature high-quality printing with scratch-resistant coating and raised edges for screen protection. Stand out with unique designs that aren't available anywhere else.
+                  </p>
+                </>
+              )}
+              {(filters.brand === 'Apple' || filters.category === 'iPhone') && (
+                <>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">iPhone Mobile Covers - Premium Cases for Apple Devices</h2>
+                  <p className="text-gray-700 mb-4">
+                    Protect your iPhone with our premium mobile covers designed specifically for Apple devices. Available for iPhone 15, 14, 13, 12, SE, and older models. Our iPhone cases feature precise cutouts, wireless charging compatibility, and slim profiles that maintain the elegant design of your device.
+                  </p>
+                  <p className="text-gray-700">
+                    Choose from clear cases to showcase your iPhone's original color, or opt for custom designs with photos and artwork. All iPhone covers include raised bezels for camera and screen protection, anti-slip grip, and shock-absorbing corners for drop protection.
+                  </p>
+                </>
+              )}
+              {filters.brand === 'Samsung' && (
+                <>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Samsung Mobile Covers - Galaxy Phone Cases Online</h2>
+                  <p className="text-gray-700 mb-4">
+                    Find the perfect mobile cover for your Samsung Galaxy smartphone. We offer cases for Galaxy S series, A series, M series, and Note devices. Our Samsung covers provide excellent protection while maintaining the sleek design of your phone. Available in various styles from slim to rugged protection.
+                  </p>
+                  <p className="text-gray-700">
+                    All Samsung cases feature precise button cutouts, support for wireless charging, and military-grade drop protection. Choose from transparent, matte, or glossy finishes, or create your own custom design with personal photos and text.
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Products Grid */}
         {loading ? (

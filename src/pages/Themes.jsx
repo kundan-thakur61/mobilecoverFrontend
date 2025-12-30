@@ -117,6 +117,21 @@ const Themes = () => {
         schema={themesSchema}
       />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      
+      {/* SEO Content for Themes */}
+      {/* <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Mobile Cover Themes & Collections - Designer Phone Cases</h1>
+        <p className="text-gray-700 mb-4">
+          Discover our exclusive collection of themed mobile covers designed to match your style and personality. From trending anime designs to elegant minimalist patterns, our curated themes offer something for everyone. Each collection features high-quality prints with premium protection for your smartphone.
+        </p>
+        <p className="text-gray-700 mb-4">
+          Browse through our carefully crafted themes including pop culture references, nature-inspired designs, abstract art, and seasonal collections. All theme-based covers are available for customization, allowing you to add personal touches while maintaining the aesthetic of the original design. Perfect for those who want unique phone cases that stand out.
+        </p>
+        <p className="text-gray-700">
+          Our themed collections are regularly updated with new designs based on trending styles and customer preferences. Whether you're an anime fan, nature lover, or minimalist enthusiast, find the perfect mobile cover theme that represents your unique style. Shop now and enjoy fast delivery across India with premium quality guaranteed.
+        </p>
+      </div> */}
+
      <div className="w-full">
   <div className="bg-white/25 rounded-2xl p-3 backdrop-blur-sm">
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
