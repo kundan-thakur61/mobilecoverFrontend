@@ -29,15 +29,15 @@ const MATERIAL_OPTIONS = [
     id: 'polycarbonate',
     label: 'Glossy Metal',
     subtitle: 'metal finish Smooth shiny look Strong & durable',
-    price: 199,
-    originalPrice: 300,
+    price: 1,
+    originalPrice: 2,
   },
   {
     id: 'tempered-glass',
     label: 'Glossy Metal + Gel',
     subtitle: 'Transparent layer Extra shine Design  premium',
-    price: 249,
-    originalPrice: 350,
+    price: 1.5,
+    originalPrice: 3,
   },
 ];
 
@@ -420,7 +420,8 @@ const CustomMobilePage = () => {
           toast.success("Payment successful!");
           navigate("/custom-orders");
         } catch (error) {
-          toast.error("Payment verification failed");
+          console.error('Payment verification error:', error);
+          toast.error(error?.message || "Payment verification failed. Please contact support.");
         }
       },
     };

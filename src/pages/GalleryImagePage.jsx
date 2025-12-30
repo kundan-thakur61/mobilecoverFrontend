@@ -9,6 +9,8 @@ import { resolveImageUrl, formatPrice } from '../utils/helpers';
 import { addToCart } from '../redux/slices/cartSlice';
 import { FALLBACK_COLLECTION_MAP } from '../data/fallbackCollections';
 import { FALLBACK_MOBILE_COMPANIES } from '../data/fallbackMobileCompanies';
+import { createSafeSvgProps } from '../utils/svgUtils';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 // const COLLECTION_CASE_PRICE = materialOptions.find((option) => option.id === selectedMaterial)?.price || 199;
 const DEFAULT_FRAME = '/frames/frame-1-fixed.svg';
@@ -31,13 +33,13 @@ const slugifyId = (value) => {
 const materialOptions = [
   {
     id: 'matte',
-    price: 199,
+    price: 1,
     label: 'Glossy Metal',
     blurb: 'Smooth aur shiny look. Strong & durable',
   },
   {
     id: 'gloss',
-    price: 249,
+    price: 2,
     label: 'Glossy Metal + Gel',
     blurb: 'Extra shine. 3D premium protection',
   },
@@ -199,6 +201,14 @@ const GalleryImagePage = () => {
     return resolved || DEFAULT_FRAME;
   }, [selectedModel, selectedCompany]);
 
+  // Safe SVG props to prevent attribute errors
+  const safeSvgProps = useMemo(() => {
+    return createSafeSvgProps({
+      width: 'auto',
+      height: 'auto'
+    });
+  }, []);
+
   const builderReady = Boolean(selectedImage && selectedCompany && selectedModel);
 
   const buildCartBlueprint = () => {
@@ -244,17 +254,22 @@ const GalleryImagePage = () => {
     
 
   const handleCartAction = (mode = 'cart') => {
-    const blueprint = buildCartBlueprint();
-    if (!blueprint) {
-      toast.info('Pick an artwork, material, brand, and model to continue.');
-      return;
-    }
-    dispatch(addToCart({ ...blueprint, quantity: 1 }));
-    if (mode === 'buy') {
-      toast.success('Design locked! Redirecting to checkout.');
-      navigate('/checkout');
-    } else {
-      toast.success('Design added to your cart.');
+    try {
+      const blueprint = buildCartBlueprint();
+      if (!blueprint) {
+        toast.info('Pick an artwork, material, brand, and model to continue.');
+        return;
+      }
+      dispatch(addToCart({ ...blueprint, quantity: 1 }));
+      if (mode === 'buy') {
+        toast.success('Design locked! Redirecting to checkout.');
+        navigate('/checkout');
+      } else {
+        toast.success('Design added to your cart.');
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      toast.error('Failed to add item to cart. Please try again.');
     }
   };
 

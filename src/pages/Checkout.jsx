@@ -259,7 +259,8 @@ export default function Checkout() {
               // navigate(`/order-success/${order._id}`);
               window.location.href = `/order-success/${order._id}`;
             } catch (err) {
-              toast.error(err.response?.data?.message || 'Payment verification failed');
+              console.error('Payment verification error:', err);
+              toast.error(err.response?.data?.message || 'Payment verification failed. Please contact support.');
             }
           },
           prefill: {

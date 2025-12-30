@@ -12,6 +12,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile, logout } from './redux/slices/authSlice';
 import { fetchWishlist } from './redux/slices/wishlistSlice';
 import { PageLoader } from './components/Loader';
+import { initErrorSuppression } from './utils/errorSuppression';
+import { runDevelopmentChecks } from './utils/devChecks';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Layout components
 import Header from './components/Header';
@@ -66,6 +69,12 @@ function App() {
   const user = useSelector((state) => state.auth.user);
   const loading = useSelector((state) => state.auth.loading);
 
+  // Initialize error suppression on app start
+  useEffect(() => {
+    initErrorSuppression();
+    runDevelopmentChecks();
+  }, []);
+
   // On first mount, if a token exists but user isn't loaded yet, fetch profile
   useEffect(() => {
     if (token && !user) {
@@ -96,25 +105,27 @@ function App() {
   }
 
   const Layout = () => (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      <main className="pt-16">
-        <Outlet />
-      </main>
-      <Footer />
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-    </div>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="pt-16">
+          <Outlet />
+        </main>
+        <Footer />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+      </div>
+    </ErrorBoundary>
   );
 
   const router = createBrowserRouter([

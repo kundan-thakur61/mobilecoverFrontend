@@ -26,6 +26,11 @@ axiosClient.interceptors.response.use(
     return response;
   },
   (error) => {
+    // Log API errors for debugging
+    if (error.response?.status === 404) {
+      console.warn('API endpoint not found:', error.config?.url);
+    }
+    
     if (error.response?.status === 401) {
       // Token expired or invalid: remove token and notify the app
       try {
