@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import * as shiprocketAPI from '../api/shiprocket';
+import * as deliveryOneAPI from '../api/deliveryOne';
 
 /**
- * Admin Shiprocket Management Component
+ * Admin DeliveryOne Management Component
  * Manage shipments for orders
  */
-export default function AdminShiprocketManagement({ orderId, orderType = 'regular', onUpdate }) {
+export default function AdminDeliveryOneManagement({ orderId, orderType = 'regular', onUpdate }) {
   const [loading, setLoading] = useState(false);
   const [shipmentData, setShipmentData] = useState(null);
   const [couriers, setCouriers] = useState([]);
@@ -19,7 +19,7 @@ export default function AdminShiprocketManagement({ orderId, orderType = 'regula
     
     try {
       setLoading(true);
-      const result = await shiprocketAPI.getRecommendedCouriers(orderId, orderType);
+      const result = await deliveryOneAPI.getRecommendedCouriers(orderId, orderType);
 
       if (result.success && result.data.couriers) {
         setCouriers(result.data.couriers);
@@ -50,7 +50,7 @@ export default function AdminShiprocketManagement({ orderId, orderType = 'regula
 
     try {
       setLoading(true);
-      const result = await shiprocketAPI.createShipment(orderId, orderType, {
+      const result = await deliveryOneAPI.createShipment(orderId, orderType, {
         pickupLocation: 'Primary',
         dimensions: { length: 15, breadth: 10, height: 2 },
         weight: 0.15
@@ -80,7 +80,7 @@ export default function AdminShiprocketManagement({ orderId, orderType = 'regula
     
     try {
       setLoading(true);
-      const result = await shiprocketAPI.assignCourier(orderId, orderType, courierId);
+      const result = await deliveryOneAPI.assignCourier(orderId, orderType, courierId);
 
       if (result.success) {
         toast.success(`Courier assigned! AWB: ${result.data.awbCode}`);
@@ -102,7 +102,7 @@ export default function AdminShiprocketManagement({ orderId, orderType = 'regula
     
     try {
       setLoading(true);
-      const result = await shiprocketAPI.requestPickup(orderId, orderType);
+      const result = await deliveryOneAPI.requestPickup(orderId, orderType);
 
       if (result.success) {
         toast.success('Pickup requested successfully!');
@@ -123,7 +123,7 @@ export default function AdminShiprocketManagement({ orderId, orderType = 'regula
     
     try {
       setLoading(true);
-      const result = await shiprocketAPI.generateLabel(orderId, orderType);
+      const result = await deliveryOneAPI.generateLabel(orderId, orderType);
 
       if (result.success && result.data.labelUrl) {
         window.open(result.data.labelUrl, '_blank');
@@ -144,7 +144,7 @@ export default function AdminShiprocketManagement({ orderId, orderType = 'regula
 
     try {
       setLoading(true);
-      const result = await shiprocketAPI.cancelShipment(orderId, orderType);
+      const result = await deliveryOneAPI.cancelShipment(orderId, orderType);
 
       if (result.success) {
         toast.success('Shipment cancelled successfully');
@@ -164,7 +164,7 @@ export default function AdminShiprocketManagement({ orderId, orderType = 'regula
     <div className="bg-white rounded-lg shadow p-3 sm:p-6 mt-4">
       <h3 className="text-base sm:text-lg font-semibold mb-4 flex items-center gap-2">
         <span className="text-xl sm:text-2xl">🚚</span>
-        <span className="truncate">Shiprocket Management</span>
+        <span className="truncate">DeliveryOne Management</span>
       </h3>
 
       {/* Action Buttons */}
@@ -264,7 +264,7 @@ export default function AdminShiprocketManagement({ orderId, orderType = 'regula
       <div className="mt-4 p-3 sm:p-4 bg-gray-50 rounded-lg text-xs sm:text-sm text-gray-600">
         <p className="font-semibold mb-2">Workflow:</p>
         <ol className="list-decimal list-inside space-y-1">
-          <li>Create Shipment in Shiprocket</li>
+          <li>Create Shipment in DeliveryOne</li>
           <li>Auto-assign cheapest courier OR select manually</li>
           <li>Generate shipping label (optional)</li>
           <li>Request pickup from courier</li>

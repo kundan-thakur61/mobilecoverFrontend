@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { trackShipment } from '../api/shiprocket';
+import { trackShipment } from '../api/deliveryOne';
 
 const STATUS_STEPS = [
   { key: 'placed', label: 'Order Placed' },
@@ -120,7 +120,7 @@ export default function ShipmentTracking({ orderId, orderType = 'regular', awbCo
               rel="noopener noreferrer"
               className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              Track on Shiprocket
+              Track on Courier
             </a>
           )}
         </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { checkServiceability } from '../api/shiprocket';
+import { checkServiceability } from '../api/deliveryOne';
 import { toast } from 'react-toastify';
 
 /**
