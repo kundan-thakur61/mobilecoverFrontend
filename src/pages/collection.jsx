@@ -2,11 +2,13 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { FiArrowLeft, FiCheckCircle, FiImage, FiTrash2, FiUpload } from 'react-icons/fi';
+import { FiArrowLeft, FiCheckCircle, FiImage, FiSmartphone, FiTrash2, FiUpload } from 'react-icons/fi';
 import collectionAPI from '../api/collectionAPI';
+import mobileAPI from '../api/mobileAPI';
 import { FALLBACK_COLLECTION_MAP } from '../data/fallbackCollections';
+import { FALLBACK_MOBILE_COMPANIES } from '../data/fallbackMobileCompanies';
 import { addToCart } from '../redux/slices/cartSlice';
-import { resolveImageUrl } from '../utils/helpers';
+import { resolveImageUrl, formatPrice } from '../utils/helpers';
 
 const emptyMeta = {
   title: '',
@@ -50,6 +52,15 @@ const CollectionPage = () => {
   const [creating, setCreating] = useState(false);
   const [createDraft, setCreateDraft] = useState({ ...emptyMeta, title: '', handle: handle || '' });
   const [selectedImage, setSelectedImage] = useState(null);
+  
+  // Mobile company and model state
+  const [companies, setCompanies] = useState([]);
+  const [models, setModels] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(null);
+  const [loadingCompanies, setLoadingCompanies] = useState(true);
+  const [loadingModels, setLoadingModels] = useState(false);
+  const [catalogError, setCatalogError] = useState('');
 
   const loadCollection = useCallback(async () => {
     if (!handle) return;
@@ -67,32 +78,27 @@ const CollectionPage = () => {
       setNotFound(false);
     }
 
-    try {
-      const res = await collectionAPI.getByHandle(handle);
-      const data = res.data?.data?.collection;
-      if (data) {
-        setCollection(data);
-        setNotFound(false);
-        setError('');
-        return;
-      }
-      if (!hasFallback) {
+    // Only try to fetch from API if no fallback exists
+    if (!hasFallback) {
+      try {
+        const res = await collectionAPI.getByHandle(handle);
+        const data = res.data?.data?.collection;
+        if (data) {
+          setCollection(data);
+          setNotFound(false);
+          setError('');
+          return;
+        }
         setNotFound(true);
-      }
-    } catch (err) {
-      if (err.response?.status === 404) {
-        if (!hasFallback) {
+      } catch (err) {
+        if (err.response?.status === 404) {
           setCollection(null);
           setNotFound(true);
-        }
-      } else {
-        const message = err.response?.data?.message || err.message || 'Failed to load collection';
-        if (!hasFallback) {
+        } else {
+          const message = err.response?.data?.message || err.message || 'Failed to load collection';
           setError(message);
         }
-      }
-    } finally {
-      if (!hasFallback) {
+      } finally {
         setLoading(false);
       }
     }
@@ -135,6 +141,72 @@ const CollectionPage = () => {
     });
   }, [galleryImages]);
 
+  // Fetch mobile companies
+  useEffect(() => {
+    let ignore = false;
+    const fetchCompanies = async () => {
+      try {
+        setLoadingCompanies(true);
+        const response = await mobileAPI.getCompanies({ limit: 100 });
+        if (ignore) return;
+        const fetched = response?.data?.data?.companies || [];
+        if (fetched.length) {
+          setCompanies(fetched);
+        } else {
+          setCompanies(FALLBACK_MOBILE_COMPANIES);
+          setCatalogError('Live catalog is offline, showing most requested devices.');
+        }
+      } catch (err) {
+        if (ignore) return;
+        setCompanies(FALLBACK_MOBILE_COMPANIES);
+        setCatalogError('Live catalog is offline, showing most requested devices.');
+      } finally {
+        if (!ignore) setLoadingCompanies(false);
+      }
+    };
+    fetchCompanies();
+    return () => { ignore = true; };
+  }, []);
+
+  // Fetch mobile models when company changes
+  useEffect(() => {
+    if (!selectedCompany) {
+      setModels([]);
+      setSelectedModel(null);
+      setLoadingModels(false);
+      return;
+    }
+    if (selectedCompany.__isFallback) {
+      const fallbackModels = selectedCompany.models || [];
+      setModels(fallbackModels);
+      setSelectedModel(fallbackModels[0] || null);
+      setLoadingModels(false);
+      return;
+    }
+    let cancelled = false;
+    const fetchModels = async () => {
+      try {
+        setLoadingModels(true);
+        const response = await mobileAPI.getModels({ company: selectedCompany._id, limit: 200 });
+        const fetchedModels = response?.data?.data?.models || [];
+        if (!cancelled) {
+          setModels(fetchedModels);
+          setSelectedModel(fetchedModels[0] || null);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setModels([]);
+          setSelectedModel(null);
+          toast.error('Unable to load models for this brand. Please try again.');
+        }
+      } finally {
+        if (!cancelled) setLoadingModels(false);
+      }
+    };
+    fetchModels();
+    return () => { cancelled = true; };
+  }, [selectedCompany]);
+
   const handleMetaChange = (event) => {
     const { name, value } = event.target;
     setMetaDraft((prev) => ({ ...prev, [name]: value }));
@@ -149,17 +221,17 @@ const CollectionPage = () => {
     navigate(nextUrl, { state: { selectedImage: image } });
   };
 
-  // const handleCompanySelect = (event) => {
-  //   const companyId = event.target.value;
-  //   const company = companies.find((item) => item._id === companyId) || null;
-  //   setSelectedCompany(company);
-  // };
+  const handleCompanySelect = (event) => {
+    const companyId = event.target.value;
+    const company = companies.find((item) => item._id === companyId) || null;
+    setSelectedCompany(company);
+  };
 
-  // const handleModelSelect = (event) => {
-  //   const modelId = event.target.value;
-  //   const model = models.find((item) => item._id === modelId) || null;
-  //   setSelectedModel(model);
-  // };
+  const handleModelSelect = (event) => {
+    const modelId = event.target.value;
+    const model = models.find((item) => item._id === modelId) || null;
+    setSelectedModel(model);
+  };
 
   const handleMetaSave = async (event) => {
     event.preventDefault();
@@ -362,6 +434,55 @@ const CollectionPage = () => {
                   </label>
                 )}
               </div>
+
+              {/* Mobile Company & Model Selector */}
+              <div className="mx-10 mb-8 p-6 bg-gradient-to-r from-primary-50 to-blue-50 rounded-2xl border border-primary-100">
+                <div className="flex items-center gap-2 mb-4">
+                  <FiSmartphone className="text-primary-600 h-5 w-5" />
+                  <h3 className="text-lg font-semibold text-gray-900">Select Your Phone</h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Mobile Brand</label>
+                    <select
+                      className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 focus:border-primary-500 focus:ring-primary-500 bg-white"
+                      value={selectedCompany?._id || ''}
+                      onChange={handleCompanySelect}
+                      disabled={loadingCompanies}
+                    >
+                      <option value="">{loadingCompanies ? 'Loading brands...' : 'Select your phone brand'}</option>
+                      {companies.map((company) => (
+                        <option key={company._id} value={company._id}>{company.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Model</label>
+                    <select
+                      className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-900 focus:border-primary-500 focus:ring-primary-500 bg-white"
+                      value={selectedModel?._id || ''}
+                      onChange={handleModelSelect}
+                      disabled={!selectedCompany || loadingModels}
+                    >
+                      <option value="">
+                        {!selectedCompany ? 'Select a brand first' : loadingModels ? 'Loading models...' : models.length ? 'Select your phone model' : 'No models for this brand'}
+                      </option>
+                      {models.map((model) => (
+                        <option key={model._id} value={model._id}>{model.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                {catalogError && (
+                  <p className="mt-3 text-sm text-amber-600 bg-amber-50 border border-amber-100 rounded-xl px-4 py-2">{catalogError}</p>
+                )}
+                {selectedCompany && selectedModel && (
+                  <div className="mt-4 flex items-center gap-2 text-sm text-primary-700 bg-primary-100 rounded-xl px-4 py-2">
+                    <FiSmartphone className="h-4 w-4" />
+                    <span>Selected: <strong>{selectedCompany.name} {selectedModel.name}</strong></span>
+                  </div>
+                )}
+              </div>
 {/*    start  */}
            {galleryImages.length === 0 ? (
   <div className="border border-dashed rounded-xl p-10 text-center text-gray-500">
@@ -418,12 +539,36 @@ const CollectionPage = () => {
               </span>
             )}
 
+            {/* Mobile Company & Model Badge */}
+            {selectedCompany && selectedModel && (
+              <span className="absolute top-3 right-3 flex items-center gap-1
+                               bg-primary-600 text-white text-xs font-medium
+                               px-2 py-1 rounded-full shadow-sm">
+                <FiSmartphone className="h-3 w-3" />
+                {selectedCompany.name}
+              </span>
+            )}
+
             {/* 🔢 Bottom unique number */}
             <span className="absolute bottom-3 left-1/2 -translate-x-1/2
                              bg-black/80 text-white text-xs font-semibold
                              px-3 py-1 rounded-full">
               {String(index + 1).padStart(2, '0')}
             </span>
+
+            {/* Caption with model info */}
+            {(image.caption || (selectedCompany && selectedModel)) && (
+              <div className="absolute bottom-10 left-2 right-2">
+                <div className="bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1 text-center">
+                  {image.caption && (
+                    <p className="text-xs font-medium text-gray-800 truncate">{image.caption}</p>
+                  )}
+                  {selectedCompany && selectedModel && (
+                    <p className="text-xs text-gray-600 truncate">{selectedModel.name}</p>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Delete button (admin only) */}
             {isAdmin && (
@@ -441,7 +586,7 @@ const CollectionPage = () => {
                     handleRemoveImage(image._id);
                   }
                 }}
-                className="absolute top-3 right-3 bg-white/90 rounded-full p-2
+                className="absolute top-10 right-3 bg-white/90 rounded-full p-2
                            text-red-600 shadow opacity-0
                            group-hover:opacity-100 transition"
                 title="Delete image"

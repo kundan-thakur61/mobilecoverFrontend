@@ -1,9 +1,9 @@
-# Shiprocket Frontend Integration - Complete
+# DeliveryOne Frontend Integration - Complete
 
 ## ✅ Components Created
 
-### 1. **API Service** - `src/api/shiprocket.js`
-Complete API wrapper for all Shiprocket endpoints:
+### 1. **API Service** - `src/api/deliveryOne.js`
+Complete API wrapper for all DeliveryOne endpoints:
 - `trackShipment()` - Track shipment by order ID
 - `checkServiceability()` - Check pincode delivery availability
 - `createShipment()` - Admin: Create shipment
@@ -17,7 +17,7 @@ Complete API wrapper for all Shiprocket endpoints:
 
 ### 2. **Admin Components**
 
-#### `AdminShiprocketManagement.jsx`
+#### `AdminDeliveryOneManagement.jsx`
 Complete shipment management interface for admin:
 - Create shipments with one click
 - Auto-assign cheapest courier
@@ -33,7 +33,7 @@ Full admin dashboard for managing all shipments:
 - Expandable order cards showing:
   - Order details
   - Shipping address
-  - Shiprocket status
+  - DeliveryOne status
   - Real-time tracking
 - Integrated shipment management controls
 - Bulk operations support
@@ -46,7 +46,7 @@ Real-time tracking display for customers:
 - Timeline view of tracking history
 - AWB code and courier details
 - Auto-refresh functionality
-- External tracking link to Shiprocket
+- External tracking link to DeliveryOne
 - Visual timeline with status indicators
 
 #### `PincodeChecker.jsx`
@@ -61,10 +61,10 @@ Delivery availability checker:
 ### In Admin Dashboard
 
 ```jsx
-import AdminShiprocketManagement from '../components/AdminShiprocketManagement';
+import AdminDeliveryOneManagement from '../components/AdminDeliveryOneManagement';
 
 // In your admin order details page
-<AdminShiprocketManagement 
+<AdminDeliveryOneManagement 
   orderId={order._id}
   orderType="regular"
   onUpdate={() => refetchOrder()}
@@ -77,12 +77,12 @@ import AdminShiprocketManagement from '../components/AdminShiprocketManagement';
 import ShipmentTracking from '../components/ShipmentTracking';
 
 // In your order details/success page
-{order.shiprocket?.awbCode && (
+{order.deliveryone?.awbCode && (
   <ShipmentTracking
     orderId={order._id}
     orderType="regular"
-    awbCode={order.shiprocket.awbCode}
-    courierName={order.shiprocket.courierName}
+    awbCode={order.deliveryone.awbCode}
+    courierName={order.deliveryone.courierName}
   />
 )}
 ```
@@ -125,14 +125,14 @@ Update your admin navigation to include:
 ### 3. Update Order Pages
 
 #### Admin Order Details
-Add the Shiprocket management component:
+Add the DeliveryOne management component:
 ```jsx
 // In AdminDashboard.jsx or AdminCustomOrders.jsx
-import AdminShiprocketManagement from '../components/AdminShiprocketManagement';
+import AdminDeliveryOneManagement from '../components/AdminDeliveryOneManagement';
 
 // After order details
 {order.payment?.status === 'paid' && (
-  <AdminShiprocketManagement
+  <AdminDeliveryOneManagement
     orderId={order._id}
     orderType="regular" // or "custom"
     onUpdate={fetchOrders}
@@ -147,12 +147,12 @@ Add tracking component:
 import ShipmentTracking from '../components/ShipmentTracking';
 
 // Show tracking if AWB exists
-{order.shiprocket?.awbCode && (
+{order.deliveryone?.awbCode && (
   <ShipmentTracking
     orderId={order._id}
     orderType="regular"
-    awbCode={order.shiprocket.awbCode}
-    courierName={order.shiprocket.courierName}
+    awbCode={order.deliveryone.awbCode}
+    courierName={order.deliveryone.courierName}
   />
 )}
 ```
@@ -253,29 +253,29 @@ Visual status indicators for:
 
 ## 📚 API Reference
 
-All API calls are handled through `src/api/shiprocket.js`:
+All API calls are handled through `src/api/deliveryOne.js`:
 
 ```javascript
-import * as shiprocketAPI from '../api/shiprocket';
+import * as deliveryOneAPI from '../api/deliveryOne';
 
 // User APIs
-await shiprocketAPI.trackShipment(orderId, orderType);
-await shiprocketAPI.checkServiceability(pickup, delivery, weight, cod);
+await deliveryOneAPI.trackShipment(orderId, orderType);
+await deliveryOneAPI.checkServiceability(pickup, delivery, weight, cod);
 
 // Admin APIs
-await shiprocketAPI.createShipment(orderId, orderType, options);
-await shiprocketAPI.assignCourier(orderId, orderType, courierId);
-await shiprocketAPI.getRecommendedCouriers(orderId, orderType);
-await shiprocketAPI.requestPickup(orderId, orderType);
-await shiprocketAPI.cancelShipment(orderId, orderType);
-await shiprocketAPI.generateLabel(orderId, orderType);
-await shiprocketAPI.generateManifest(orderIds, orderType);
-await shiprocketAPI.getPickupLocations();
+await deliveryOneAPI.createShipment(orderId, orderType, options);
+await deliveryOneAPI.assignCourier(orderId, orderType, courierId);
+await deliveryOneAPI.getRecommendedCouriers(orderId, orderType);
+await deliveryOneAPI.requestPickup(orderId, orderType);
+await deliveryOneAPI.cancelShipment(orderId, orderType);
+await deliveryOneAPI.generateLabel(orderId, orderType);
+await deliveryOneAPI.generateManifest(orderIds, orderType);
+await deliveryOneAPI.getPickupLocations();
 ```
 
 ## 🎉 Complete!
 
-Your frontend now has full Shiprocket integration with:
+Your frontend now has full DeliveryOne integration with:
 - ✅ Admin shipment management
 - ✅ User shipment tracking
 - ✅ Pincode serviceability checker
@@ -284,4 +284,4 @@ Your frontend now has full Shiprocket integration with:
 - ✅ Error handling
 - ✅ Loading states
 
-All components are production-ready and fully integrated with your backend Shiprocket API!
+All components are production-ready and fully integrated with your backend DeliveryOne API!

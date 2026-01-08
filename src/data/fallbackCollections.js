@@ -20,7 +20,7 @@ const slugify = (value = '') => value
 
 const RAW_FALLBACK_COLLECTIONS = [
   {
-    handle: 'dreamy-pastels',
+    handle: 'Krishna Theme',
     aliases: ['1'],
     title: 'Dreamy Pastels',
     tagline: 'Soft gradients with a glassy sheen.',
@@ -33,7 +33,7 @@ const RAW_FALLBACK_COLLECTIONS = [
     ]
   },
   {
-    handle: 'custom-studio',
+    handle: 'Anime Theme',
     aliases: ['2'],
     title: 'Custom Studio',
     tagline: 'Upload-ready canvases with guide layers.',
@@ -46,7 +46,7 @@ const RAW_FALLBACK_COLLECTIONS = [
     ]
   },
   {
-    handle: 'gilded-marble',
+    handle: 'Marble Theme',
     aliases: ['3'],
     title: 'Gilded Marble',
     tagline: 'Luxe streaks dipped in gold foil.',
@@ -59,7 +59,7 @@ const RAW_FALLBACK_COLLECTIONS = [
     ]
   },
   {
-    handle: 'quotes-club',
+    handle: 'Cricketer Theme',
     aliases: ['4'],
     title: 'Quotes Club',
     tagline: 'Statement typography for bold covers.',
@@ -72,7 +72,7 @@ const RAW_FALLBACK_COLLECTIONS = [
     ]
   },
   {
-    handle: 'midnight-bloom',
+    handle: 'Cute Theme',
     aliases: ['5'],
     title: 'Midnight Bloom',
     tagline: 'Inky botanicals with electric outlines.',
@@ -85,7 +85,7 @@ const RAW_FALLBACK_COLLECTIONS = [
     ]
   },
   {
-    handle: 'aurora-pulse',
+    handle: 'Aesthetic Theme',
     aliases: ['6'],
     title: 'Aurora Pulse',
     tagline: 'Northern lights reimagined as waveforms.',
@@ -98,7 +98,7 @@ const RAW_FALLBACK_COLLECTIONS = [
     ]
   },
   {
-    handle: 'cosmic-doodles',
+    handle: 'Flower Theme',
     aliases: ['7'],
     title: 'Cosmic Doodles',
     tagline: 'Playful scribbles floating in zero-g.',

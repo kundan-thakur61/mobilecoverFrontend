@@ -1,14 +1,15 @@
 import axiosClient from './axiosClient';
 
 const authAPI = {
-  // Authentication endpoints
-  login: (credentials) => {
-    return axiosClient.post('/auth/login', credentials);
+  // Email/Password login (admin only)
+  login: (email, password) => {
+    return axiosClient.post('/auth/login', { email, password });
   },
 
-  register: (userData) => {
-    return axiosClient.post('/auth/register', userData);
-  },
+  // Google OAuth authentication - DISABLED
+  // googleAuth: (credential) => {
+  //   return axiosClient.post('/auth/google', { credential });
+  // },
 
   getMe: () => {
     // Normalize response to return the nested data object { user }

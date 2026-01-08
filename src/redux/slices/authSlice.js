@@ -2,11 +2,11 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authAPI from '../../api/authAPI';
 
 // Async thunks
-export const login = createAsyncThunk(
-  'auth/login',
-  async (credentials, { rejectWithValue }) => {
+export const adminLogin = createAsyncThunk(
+  'auth/adminLogin',
+  async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await authAPI.login(credentials);
+      const response = await authAPI.login(email, password);
       // backend returns { success, message, data: { user, token } }
       const payload = response.data?.data || response.data;
       localStorage.setItem('token', payload.token);
@@ -17,19 +17,20 @@ export const login = createAsyncThunk(
   }
 );
 
-export const register = createAsyncThunk(
-  'auth/register',
-  async (userData, { rejectWithValue }) => {
-    try {
-      const response = await authAPI.register(userData);
-      const payload = response.data?.data || response.data;
-      localStorage.setItem('token', payload.token);
-      return payload;
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Registration failed');
-    }
-  }
-);
+// Google login - DISABLED
+// export const googleLogin = createAsyncThunk(
+//   'auth/googleLogin',
+//   async (credential, { rejectWithValue }) => {
+//     try {
+//       const response = await authAPI.googleAuth(credential);
+//       const payload = response.data?.data || response.data;
+//       localStorage.setItem('token', payload.token);
+//       return payload;
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data?.message || 'Google authentication failed');
+//     }
+//   }
+// );
 
 export const getUserProfile = createAsyncThunk(
   'auth/getUserProfile',
@@ -95,36 +96,19 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Login
-      .addCase(login.pending, (state) => {
+      // Admin Login
+      .addCase(adminLogin.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(login.fulfilled, (state, action) => {
+      .addCase(adminLogin.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isAuthenticated = true;
         state.error = null;
       })
-      .addCase(login.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        state.isAuthenticated = false;
-      })
-      // Register
-      .addCase(register.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(register.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-        state.isAuthenticated = true;
-        state.error = null;
-      })
-      .addCase(register.rejected, (state, action) => {
+      .addCase(adminLogin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.isAuthenticated = false;

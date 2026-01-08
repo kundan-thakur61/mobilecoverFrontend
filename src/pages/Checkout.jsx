@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import orderAPI from '../api/orderAPI';
+import paymentAPI from '../api/paymentAPI';
 import authAPI from '../api/authAPI';
 import { selectCartItems, selectCartTotal, clearCart, loadCart } from '../redux/slices/cartSlice';
 import { toast } from 'react-toastify';
@@ -105,13 +106,13 @@ export default function Checkout() {
       return toast.error('Your cart is empty');
     }
 
-    // Require user to be authenticated before placing an order
-    if (!user) {
-      toast.error('Please log in to place an order');
-      const redirectUrl = encodeURIComponent(window.location.pathname + window.location.search);
-      navigate('/register?' + new URLSearchParams({ redirectUrl }).toString());
-      return;
-    }
+    // Guest checkout allowed - no login required
+    // if (!user) {
+    //   toast.error('Please log in to place an order');
+    //   const redirectUrl = encodeURIComponent(window.location.pathname + window.location.search);
+    //   navigate('/register?' + new URLSearchParams({ redirectUrl }).toString());
+    //   return;
+    // }
 
     if (!validate()) return toast.error('Please fix shipping errors');
 
@@ -250,11 +251,12 @@ export default function Checkout() {
           description: `Order #${order._id}`,
           handler: async function (response) {
             try {
-              await orderAPI.verifyPayment({
+              // Use new payment verification endpoint for robust validation
+              await paymentAPI.verifyPayment({
                 orderId: order._id || order.id,
-                razorpay_order_id: razorpayOrderId,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
+                razorpayOrderId: razorpayOrderId,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
               });
               dispatch(clearCart());
               toast.success('Payment successful');
@@ -262,6 +264,18 @@ export default function Checkout() {
               window.location.href = `/order-success/${order._id}`;
             } catch (err) {
               console.error('Payment verification error:', err);
+              // Fallback: Check payment status via polling in case webhook already processed it
+              try {
+                const status = await paymentAPI.getPaymentStatus(order._id);
+                if (status.data?.data?.paymentStatus === 'paid') {
+                  dispatch(clearCart());
+                  toast.success('Payment verified successfully');
+                  window.location.href = `/order-success/${order._id}`;
+                  return;
+                }
+              } catch (statusErr) {
+                console.debug('Status check failed:', statusErr);
+              }
               toast.error(err.response?.data?.message || 'Payment verification failed. Please contact support.');
             }
           },

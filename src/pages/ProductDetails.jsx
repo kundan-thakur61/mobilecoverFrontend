@@ -371,6 +371,88 @@ const ProductDetails = ({ productIdOverride }) => {
           ))}
         </section>
 
+        {/* SEO Product Description */}
+        <section className="bg-white rounded-3xl border border-gray-100 shadow-sm p-8 space-y-8">
+          <div>
+            <h2 className="text-2xl font-black mb-6">{currentProduct.title} - Premium Custom Mobile Cover</h2>
+
+            <div className="prose prose-lg max-w-none">
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                Protect your {currentProduct.brand || 'smartphone'} with our premium {currentProduct.title} mobile cover. This custom phone case combines style, protection, and personalization to keep your device safe while expressing your unique personality. Made with high-quality materials and featuring advanced printing technology, this mobile cover offers the perfect blend of fashion and function.
+              </p>
+
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Key Features of {currentProduct.title}</h3>
+              <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
+                <li><strong>Custom Design:</strong> Personalize your mobile cover with photos, text, and patterns</li>
+                <li><strong>Premium Protection:</strong> Multi-layer construction with raised edges for screen and camera protection</li>
+                <li><strong>Perfect Fit:</strong> Precision cutouts for all ports, buttons, and camera systems</li>
+                <li><strong>Easy Installation:</strong> Snap-on design for hassle-free application and removal</li>
+                <li><strong>Lightweight Design:</strong> Slim profile that doesn't add bulk to your device</li>
+                <li><strong>UV Resistant Print:</strong> Fade-resistant colors that stay vibrant over time</li>
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Benefits of Choosing Our Custom Mobile Covers</h3>
+              <ul className="list-disc list-inside text-gray-700 mb-6 space-y-2">
+                <li><strong>Unique Style:</strong> Stand out with a one-of-a-kind design that reflects your personality</li>
+                <li><strong>Device Protection:</strong> Shield your phone from drops, scratches, and daily wear</li>
+                <li><strong>Comfortable Grip:</strong> Textured surface provides better handling and reduces slippage</li>
+                <li><strong>Cost Effective:</strong> Affordable premium protection compared to original manufacturer cases</li>
+                <li><strong>Fast Shipping:</strong> Quick delivery across India with reliable tracking</li>
+                <li><strong>Quality Guarantee:</strong> 6-month warranty against manufacturing defects</li>
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Materials Used in {currentProduct.title}</h3>
+              <p className="text-gray-700 mb-4">
+                Our mobile covers are crafted from premium polycarbonate with TPU (Thermoplastic Polyurethane) bumpers for superior shock absorption. The inner lining features a soft microfiber material that protects your device's finish while providing a snug fit. We use advanced UV printing technology to ensure vibrant, long-lasting colors that won't fade over time.
+              </p>
+
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Protection Details</h3>
+              <p className="text-gray-700 mb-4">
+                This mobile cover provides comprehensive protection for your {currentProduct.model || 'smartphone'}. The raised bezels around the screen and camera prevent direct contact with surfaces, while the reinforced corners absorb impact from drops. The anti-slip texture ensures your phone stays secure in your hand, reducing the risk of accidental falls.
+              </p>
+
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Customization Options</h3>
+              <p className="text-gray-700 mb-4">
+                Design your perfect mobile cover with our easy-to-use online tool. Upload your favorite photos, add custom text, choose from thousands of patterns, or create something completely unique. We offer various customization options including:
+              </p>
+              <ul className="list-disc list-inside text-gray-700 mb-6 space-y-1 ml-4">
+                <li>Photo uploads with custom cropping and positioning</li>
+                <li>Text overlays with multiple fonts and colors</li>
+                <li>Pattern and design library with trending styles</li>
+                <li>Color customization for different elements</li>
+                <li>Special occasion designs (birthdays, anniversaries, etc.)</li>
+              </ul>
+
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Why Choose CoverGhar.in for Your Mobile Cover?</h3>
+              <p className="text-gray-700 mb-4">
+                CoverGhar.in is India's leading destination for custom mobile covers. We combine cutting-edge technology with artistic craftsmanship to deliver products that exceed expectations. Our commitment to quality, fast shipping, and customer satisfaction makes us the preferred choice for smartphone accessories.
+              </p>
+
+              <div className="bg-primary-50 p-6 rounded-lg mt-8">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Ready to Customize Your {currentProduct.title}?</h3>
+                <p className="text-gray-700 mb-4">
+                  Don't settle for generic phone cases when you can have a custom mobile cover that perfectly matches your style. Start designing today and get premium protection with unlimited creativity. Fast shipping across India with secure payment options.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link
+                    to="/customizer"
+                    className="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors text-center"
+                  >
+                    Design Your Cover
+                  </Link>
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={!selectedVariant || !isInStock(currentProduct)}
+                    className="bg-gray-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-900 transition-colors disabled:bg-gray-400"
+                  >
+                    Add to Cart - {selectedVariant ? formatPrice(selectedVariant.price) : 'Select Variant'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {resolvedProductId && (
           <ProductReviewsSection productId={resolvedProductId} />
         )}

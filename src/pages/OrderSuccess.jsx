@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams, Link } from 'react-router-dom';
-import { FiCheckCircle, FiPackage, FiTruck, FiMapPin, FiCreditCard, FiShoppingBag } from 'react-icons/fi';
+import { FiCheckCircle, FiPackage, FiTruck, FiMapPin, FiCreditCard, FiShoppingBag, FiRefreshCw } from 'react-icons/fi';
 import orderAPI from '../api/orderAPI';
+import paymentAPI from '../api/paymentAPI';
 import { formatPrice, formatDate, getProductImage, resolveImageUrl, generateOrderNumber } from '../utils/helpers';
 import SEO from '../components/SEO';
 import { Helmet } from 'react-helmet-async';
 import { toast } from 'react-toastify';
+import { io } from 'socket.io-client';
 
 
 const OrderSuccess = () => {
@@ -14,6 +16,39 @@ const OrderSuccess = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [paymentStatus, setPaymentStatus] = useState(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Fetch payment status
+  const fetchPaymentStatus = useCallback(async () => {
+    try {
+      const response = await paymentAPI.getPaymentStatus(id);
+      const status = response.data?.data;
+      setPaymentStatus(status);
+      return status;
+    } catch (err) {
+      console.debug('Failed to fetch payment status:', err);
+      return null;
+    }
+  }, [id]);
+
+  // Manual refresh handler
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      const [orderRes, statusRes] = await Promise.all([
+        orderAPI.getOrder(id),
+        fetchPaymentStatus()
+      ]);
+      const orderData = orderRes.data?.data?.order || orderRes.data?.order || orderRes.data;
+      setOrder(orderData);
+      toast.success('Order status updated');
+    } catch (err) {
+      toast.error('Failed to refresh status');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
 
   useEffect(() => {
@@ -23,6 +58,8 @@ const OrderSuccess = () => {
         // Handle different response structures
         const orderData = response.data?.data?.order || response.data?.order || response.data;
         setOrder(orderData);
+        // Also fetch initial payment status
+        await fetchPaymentStatus();
       } catch (err) {
         console.error('Failed to fetch order:', err);
         setError(err.response?.data?.message || 'Failed to load order details');
@@ -35,6 +72,64 @@ const OrderSuccess = () => {
     if (id) {
       fetchOrder();
     }
+  }, [id, fetchPaymentStatus]);
+
+  // Socket.io real-time updates
+  useEffect(() => {
+    if (!id) return;
+
+    const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 
+                      window.location.origin;
+    
+    const socket = io(socketUrl, {
+      withCredentials: true,
+      transports: ['websocket', 'polling']
+    });
+
+    socket.on('connect', () => {
+      console.debug('Socket connected for order updates');
+      // Join the order room to receive updates
+      socket.emit('join', id);
+    });
+
+    // Listen for payment status updates
+    socket.on('paymentSuccess', (data) => {
+      if (data.orderId === id) {
+        toast.success('Payment confirmed!');
+        setPaymentStatus(prev => ({ ...prev, paymentStatus: 'paid' }));
+        // Refresh order data
+        orderAPI.getOrder(id).then(res => {
+          const orderData = res.data?.data?.order || res.data?.order || res.data;
+          setOrder(orderData);
+        });
+      }
+    });
+
+    socket.on('paymentFailed', (data) => {
+      if (data.orderId === id) {
+        toast.error('Payment failed: ' + (data.error || 'Unknown error'));
+        setPaymentStatus(prev => ({ ...prev, paymentStatus: 'failed' }));
+      }
+    });
+
+    socket.on('orderStatusUpdate', (data) => {
+      if (data.orderId === id) {
+        toast.info(`Order status: ${data.status}`);
+        setOrder(prev => prev ? { ...prev, status: data.status } : prev);
+      }
+    });
+
+    socket.on('refundCompleted', (data) => {
+      if (data.orderId === id) {
+        toast.info('Refund processed successfully');
+        setPaymentStatus(prev => ({ ...prev, refundStatus: 'completed' }));
+      }
+    });
+
+    return () => {
+      socket.emit('leave', id);
+      socket.disconnect();
+    };
   }, [id]);
 
   if (loading) {
@@ -93,6 +188,15 @@ const OrderSuccess = () => {
               <p className="text-sm text-gray-600">Order Number</p>
               <p className="text-xl font-bold text-gray-900">{orderNumber}</p>
             </div>
+            {/* Refresh button */}
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="mt-4 inline-flex items-center gap-2 text-sm text-primary-600 hover:text-primary-700 disabled:opacity-50"
+            >
+              <FiRefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              {isRefreshing ? 'Refreshing...' : 'Refresh Status'}
+            </button>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -261,12 +365,30 @@ const OrderSuccess = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-600">Payment Status</span>
                       <span className={`font-semibold capitalize ${
-                        order.payment?.status === 'paid' ? 'text-green-600' :
-                        order.payment?.status === 'failed' ? 'text-red-600' :
+                        (paymentStatus?.paymentStatus || order.payment?.status) === 'paid' ? 'text-green-600' :
+                        (paymentStatus?.paymentStatus || order.payment?.status) === 'failed' ? 'text-red-600' :
                         'text-yellow-600'
                       }`}>
-                        {order.payment?.status}
+                        {paymentStatus?.paymentStatus || order.payment?.status}
                       </span>
+                    </div>
+                  )}
+                  {paymentStatus?.refundStatus && paymentStatus.refundStatus !== 'none' && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Refund Status</span>
+                      <span className={`font-semibold capitalize ${
+                        paymentStatus.refundStatus === 'completed' ? 'text-green-600' :
+                        paymentStatus.refundStatus === 'failed' ? 'text-red-600' :
+                        'text-yellow-600'
+                      }`}>
+                        {paymentStatus.refundStatus}
+                      </span>
+                    </div>
+                  )}
+                  {paymentStatus?.refundAmount > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Refund Amount</span>
+                      <span className="font-semibold">{formatPrice(paymentStatus.refundAmount)}</span>
                     </div>
                   )}
                 </div>

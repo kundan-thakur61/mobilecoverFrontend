@@ -3,8 +3,8 @@ import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
 
 /**
- * Shiprocket API Service
- * Frontend service for interacting with Shiprocket endpoints
+ * DeliveryOne API Service
+ * Frontend service for interacting with DeliveryOne endpoints
  */
 
 // Get auth token from localStorage
@@ -28,7 +28,7 @@ const createAuthConfig = () => ({
 // Track shipment
 export const trackShipment = async (orderId, orderType = 'regular') => {
   const response = await axios.get(
-    `${API_BASE_URL}/api/shiprocket/track/${orderId}?orderType=${orderType}`,
+    `${API_BASE_URL}/api/deliveryone/track/${orderId}?orderType=${orderType}`,
     createAuthConfig()
   );
   return response.data;
@@ -37,7 +37,7 @@ export const trackShipment = async (orderId, orderType = 'regular') => {
 // Check serviceability
 export const checkServiceability = async (pickupPincode, deliveryPincode, weight = 0.5, cod = 0) => {
   const response = await axios.get(
-    `${API_BASE_URL}/api/shiprocket/check-serviceability`,
+    `${API_BASE_URL}/api/deliveryone/check-serviceability`,
     {
       params: { pickupPincode, deliveryPincode, weight, cod }
     }
@@ -52,7 +52,7 @@ export const checkServiceability = async (pickupPincode, deliveryPincode, weight
 // Create shipment
 export const createShipment = async (orderId, orderType = 'regular', options = {}) => {
   const response = await axios.post(
-    `${API_BASE_URL}/api/shiprocket/create-shipment`,
+    `${API_BASE_URL}/api/deliveryone/create-shipment`,
     {
       orderId,
       orderType,
@@ -66,7 +66,7 @@ export const createShipment = async (orderId, orderType = 'regular', options = {
 // Assign courier
 export const assignCourier = async (orderId, orderType = 'regular', courierId = null) => {
   const response = await axios.post(
-    `${API_BASE_URL}/api/shiprocket/assign-courier`,
+    `${API_BASE_URL}/api/deliveryone/assign-courier`,
     {
       orderId,
       orderType,
@@ -80,7 +80,7 @@ export const assignCourier = async (orderId, orderType = 'regular', courierId = 
 // Get recommended couriers
 export const getRecommendedCouriers = async (orderId, orderType = 'regular') => {
   const response = await axios.get(
-    `${API_BASE_URL}/api/shiprocket/recommended-couriers/${orderId}?orderType=${orderType}`,
+    `${API_BASE_URL}/api/deliveryone/recommended-couriers/${orderId}?orderType=${orderType}`,
     createAuthConfig()
   );
   return response.data;
@@ -89,7 +89,7 @@ export const getRecommendedCouriers = async (orderId, orderType = 'regular') => 
 // Request pickup
 export const requestPickup = async (orderId, orderType = 'regular') => {
   const response = await axios.post(
-    `${API_BASE_URL}/api/shiprocket/request-pickup`,
+    `${API_BASE_URL}/api/deliveryone/request-pickup`,
     {
       orderId,
       orderType
@@ -102,7 +102,7 @@ export const requestPickup = async (orderId, orderType = 'regular') => {
 // Cancel shipment
 export const cancelShipment = async (orderId, orderType = 'regular') => {
   const response = await axios.post(
-    `${API_BASE_URL}/api/shiprocket/cancel-shipment`,
+    `${API_BASE_URL}/api/deliveryone/cancel-shipment`,
     {
       orderId,
       orderType
@@ -115,7 +115,7 @@ export const cancelShipment = async (orderId, orderType = 'regular') => {
 // Generate label
 export const generateLabel = async (orderId, orderType = 'regular') => {
   const response = await axios.post(
-    `${API_BASE_URL}/api/shiprocket/generate-label`,
+    `${API_BASE_URL}/api/deliveryone/generate-label`,
     {
       orderId,
       orderType
@@ -128,7 +128,7 @@ export const generateLabel = async (orderId, orderType = 'regular') => {
 // Generate manifest
 export const generateManifest = async (orderIds, orderType = 'regular') => {
   const response = await axios.post(
-    `${API_BASE_URL}/api/shiprocket/generate-manifest`,
+    `${API_BASE_URL}/api/deliveryone/generate-manifest`,
     {
       orderIds,
       orderType
@@ -141,7 +141,7 @@ export const generateManifest = async (orderIds, orderType = 'regular') => {
 // Get pickup locations
 export const getPickupLocations = async () => {
   const response = await axios.get(
-    `${API_BASE_URL}/api/shiprocket/pickup-locations`,
+    `${API_BASE_URL}/api/deliveryone/pickup-locations`,
     createAuthConfig()
   );
   return response.data;
