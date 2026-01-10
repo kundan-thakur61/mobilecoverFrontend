@@ -195,7 +195,7 @@ export function PageLoader({ message = 'Loading...' }) {
     <div className="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
       {/* Logo */}
       <img
-        src="https://res.cloudinary.com/dwmytphop/image/upload/v1766394899/ChatGPT_Image_Dec_22_2025_09_54_27_AM_sxuryi.png"
+        src="/logo.png"
         alt="CoverGhar Logo"
         className="w-16 h-16 mb-6 animate-pulse"
         width="64"

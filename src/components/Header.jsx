@@ -54,7 +54,7 @@ const Header = () => {
               aria-label="CoverGhar - Custom Mobile Covers Home"
             >
               <img
-                src="https://res.cloudinary.com/dwmytphop/image/upload/v1766394899/ChatGPT_Image_Dec_22_2025_09_54_27_AM_sxuryi.png"
+                src="/logo.png"
                 alt="CoverGhar Logo - Custom Mobile Covers India"
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg"
                 width="40"

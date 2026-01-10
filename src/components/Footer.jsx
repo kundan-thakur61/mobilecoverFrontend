@@ -18,7 +18,7 @@ const Footer = () => {
               aria-label="CoverGhar - Custom Mobile Covers Home"
             >
               <img
-                src="https://res.cloudinary.com/dwmytphop/image/upload/v1766394899/ChatGPT_Image_Dec_22_2025_09_54_27_AM_sxuryi.png"
+                src="/logo.png"
                 alt="CoverGhar Logo - Custom Mobile Covers"
                 className="w-10 h-10 rounded-lg"
                 width="40"
@@ -334,7 +334,7 @@ const Footer = () => {
           "@type": "Organization",
           "name": "CoverGhar",
           "url": "https://www.coverghar.in",
-          "logo": "https://res.cloudinary.com/dwmytphop/image/upload/v1766394899/ChatGPT_Image_Dec_22_2025_09_54_27_AM_sxuryi.png",
+          "logo": "/logo.png",
           "description": "India's leading custom mobile cover store. Design personalized phone cases with premium quality printing.",
           "address": {
             "@type": "PostalAddress",

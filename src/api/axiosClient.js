@@ -1,6 +1,15 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+// Ensure the base URL ends with '/api' for external URLs
+let API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
+// If the URL is an external URL (starts with http), ensure it ends with /api
+if (API_BASE_URL.startsWith('http') && !API_BASE_URL.endsWith('/api')) {
+  if (!API_BASE_URL.endsWith('/')) {
+    API_BASE_URL += '/';
+  }
+  API_BASE_URL += 'api';
+}
 
 const axiosClient = axios.create({
   baseURL: API_BASE_URL,
